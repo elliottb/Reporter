@@ -1,0 +1,32 @@
+{
+	"name":"Github Tests",
+	"description":"These tests determine the status of the Github homepage",
+	"emails":[
+		{
+			"email":"test@me.com"
+		}
+	],
+	"tests":[
+		{
+			"name":"GitHub Content Test",
+			"uri":"http:\/\/github.com",
+			"content":"html",
+			"operator":"contains",
+			"args":"GitHub"
+		},
+		{
+			"name":"GitHub Content Test 2",
+			"uri":"http:\/\/github.com",
+			"content":"html",
+			"operator":"contains",
+			"args":"Sign in"
+		},
+		{
+			"name":"GitHub Status Test",
+			"uri":"https:\/\/github.com",
+			"content":"status",
+			"operator":"=",
+			"args":"200"
+		}
+	]
+}

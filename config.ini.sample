@@ -1,0 +1,37 @@
+<?php
+
+; Reporter config file
+
+[General Settings]
+
+; Relative path from to the test files
+test_folder = 'tests';
+
+; File extension for test file. Test files not matching this extension will
+; be ignored. Do not include the dot.
+test_file_extension = 'json';
+
+; Set logfile location absolute or relative to the Reporter root. Set empty,
+; null, or uncomment to not use a logfile.
+logfile = 'reporter_output.log';
+
+; Display output when running tests.
+display_output = true;
+
+[PHPMailer Settings]
+
+; Set location of PHPMailer. If empty, email notifications won't be available
+php_mailer_location = 'PHPMailer/class.phpmailer.php';
+
+; Required config fields when using PHPMailer
+smtp_host = 'smtp.me.com';
+smtp_from_email = 'test@me.com';
+
+; Optional config fields when using PHPMailer
+smtp_port = 465;
+smtp_auth = true;
+smtp_secure = 'ssl';
+smtp_username = 'test@me.com';
+smtp_password = 'PASSWORD';
+smtp_from_name = 'test@me.com';
+html_email = true;
