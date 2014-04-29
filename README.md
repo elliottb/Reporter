@@ -1,13 +1,35 @@
 # Reporter
-### A simple intgeration test framework aimed at develeopers and network administrators, written in PHP.
+##### A developer and network admin focused content monitoring, testing, and notification suite written in PHP.
+
+### What Reporter Is
+- Simple to setup and run by network admins and developers
+- Executes integration tests by examining site or service content for expected/unexpected content
+- Outputs test results in shell or sent via email
+- Supplemental to existing network health monitoring systems
+
+### What Reporter Isn't
+- A comprehensive network or system health monitoring system
+- Simple to setup for **non** network admins and developers
+
+
+### Use Cases
+
+**A. Troubleshooting & Informational Purposes**
+
+Reporter can be used to find intermittent site problems or conditions that are hard to track down. Often, knowledge of a problem's occurrence helps troubleshoot it. Without polluting the existing network monitoring infrastructure, a developer can setup a Reporter test to check for a problem and be alerted when it occurs.
+
+**B. Backup to Existing Network Health & Monitor**
+
+Reporter can be used as a self-hosted backup to paid uptime and health monitoring services.
+
 
 ### Setup
 
 1\. Copy config.ini.sample to config.ini
 
-#### Setup Email
+##### Email Setup
 
-Reporter can be easily configured to email test results on test completion using PHPMailer. If you don't want test results emailed, you can skip these steps.
+*Reporter can be easily configured to email test results on test completion using PHPMailer. If you don't want test results emailed, you can skip these steps.*
 
 2\. Within the base folder of Reporter, git clone the [PHPMailer](https://github.com/PHPMailer/PHPMailer) repository
 ```
