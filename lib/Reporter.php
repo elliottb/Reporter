@@ -63,7 +63,10 @@ class Reporter
 				if (($test_config = self::parseTestFileContents($contents)) !== false) {
 					$result_set = new \Reporter\ResultSet();
 					$this->runTestFile($test_config, $result_set);
-					$this->notifier->sendResults($result_set, $test_config);
+					if (self::testNotificationLevelMet($test_config, $result_set) && $this->notifier && $this->notifier->sendResults($result_set, $test_config)) {
+						$this->output('Results Emailed.');
+					}
+
 				} else {
 					trigger_error('Test file ' .  escapeshellcmd($filepath) . ' is not a valid json file and could not be parsed.', E_USER_ERROR);
 				}
@@ -93,6 +96,22 @@ class Reporter
 			return $config;
 		} 
 		return false;
+	}
+
+	protected static function testNotificationLevelMet($test_config, $result_set) 
+	{	
+		$notification_level = isset($test_config->options->email_level) ? $test_config->options->email_level : null;
+
+		switch ($notification_level) {
+			case 'all':
+				return true;
+			case 'skip': 
+				return $result_set->getFailCount() || $result_set->getSkipCount();
+			case 'fail':
+			default:
+				// Default for missing or misset notification level is fail.
+				return $result_set->getFailCount();
+		}
 	}
 
 	protected function runTestFile($test_config, ResultSet &$result_set) 
