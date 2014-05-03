@@ -59,8 +59,8 @@ class Reporter
 	protected function processTestFile($filepath) 
 	{
 		if ($this->validateTestFilename($filepath)) {
-			if ($contents = $this->retrieveTestFileContents($filepath)) {
-				if (($test_config = $this->parseTestFileContents($contents)) !== false) {
+			if ($contents = self::retrieveTestFileContents($filepath)) {
+				if (($test_config = self::parseTestFileContents($contents)) !== false) {
 					$result_set = new \Reporter\ResultSet();
 					$this->runTestFile($test_config, $result_set);
 					$this->notifier->sendResults($result_set, $test_config);
@@ -81,13 +81,13 @@ class Reporter
 		return $path_parts['extension'] == $this->config['test_file_extension'];
 	}
 
-	protected function retrieveTestFileContents($filepath) 
+	protected static function retrieveTestFileContents($filepath) 
 	{
 		$contents = file_get_contents($filepath);
 		return $contents;
 	}
 
-	protected function parseTestFileContents($contents) 
+	protected static function parseTestFileContents($contents) 
 	{
 		if ($config = json_decode($contents)) {
 			return $config;
