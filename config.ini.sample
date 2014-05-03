@@ -21,7 +21,7 @@ display_output = true;
 [PHPMailer Settings]
 
 ; Set location of PHPMailer. If empty, email notifications won't be available
-php_mailer_location = 'PHPMailer/class.phpmailer.php';
+; php_mailer_location = 'PHPMailer/class.phpmailer.php';
 
 ; Required config fields when using PHPMailer
 smtp_host = 'smtp.me.com';
