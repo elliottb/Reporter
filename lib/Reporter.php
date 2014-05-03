@@ -16,7 +16,11 @@ class Reporter
 		if (!$this->parseConfig($config)) {
 			trigger_error('There were errors parsing the config file', E_USER_ERROR);
 		}
-		$this->notifier = new \Reporter\Notifier($this->config);
+
+		// Only initiate Notifier if php_mailer_location is set
+		if (isset($config['php_mailer_location']) && $config['php_mailer_location']) {
+			$this->notifier = new \Reporter\Notifier($this->config);
+		}
 	}
 
 	public function run() 
