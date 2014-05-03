@@ -23,11 +23,11 @@ Reporter can be used to find intermittent site problems or conditions that are h
 Reporter can be used as a self-hosted backup to paid uptime and health monitoring services.
 
 
-### Setup
+## Setup
 
 1\. Copy config.ini.sample to config.ini
 
-##### Email Setup
+##### Email Setup (optional)
 
 *Reporter can be easily configured to email test results on test completion using PHPMailer. If you don't want test results emailed, you can skip these steps.*
 
@@ -46,7 +46,7 @@ If you don't have your own STMP mail server, you can use a third party service t
 - Gmail - send email esily using your existing Gmail account: https://www.digitalocean.com/community/articles/how-to-use-google-s-smtp-server. Note you may have to unlock your account by going here first: https://accounts.google.com/displayunlockcaptcha.
 - Mandrill - from the people who make Mailchimp: http://help.mandrill.com/categories/20090941-SMTP-Integration
 
-### Usage
+## Usage
 Reporter comes with an example json test script for testing github com. Call reporter.php with the --test argument to test against test scripts in the /tests folder. You can also call reporter.php with an absolute path to the test script or call without the --test argument to test all scripts in the /tests folder.
 
 ```
@@ -60,5 +60,57 @@ php reporter.php --test=github.json
 php reporter.php --test=/opt/tests/github.json
 ```
 
+### Test Configuration
+Reporter comes with a sample testfile [github.json](tests/github.json). You can name a test whatever you want as long as you end with the file ending specified by the test_file_extension var in your [config.ini](config.ini.sample) file. Test files must be valid json. For help debugging invalid json, try using http://json.parser.online.fr.  
 
+__Test File Contents - top level properties__
+
+Variable | Description
+------------- | -------------
+name  | _(Required)_ The name of the test file.
+description  | _(Optional)_ A description of the test file, added to notification emails when present.
+emails | _(Optional)_ An array of email addresses to send the test results to.
+options | _(Optional)_ Additional test options. See breakout table below.
+tests | _(Required)_ An array of test objects. See breakout table below.
+
+__Options Contents - a top level property (see above)__
+
+Variable | Description
+------------- | -------------
+email_level  | _(Optional)_ When to send results via email after running a test. Valid values: `skip`, `fail`, `all`. Skip will only send results when the test results contain a skip or fail result. Fail (default value when unspecified) will only send results when test results contain a fail value. All always sends test results.
+
+__Test Contents - properties of the test object, which is an array element of tests (see above)__
+
+Variable | Description
+------------- | -------------
+name  | _(Required)_ The name of the test.
+uri  | _(Required)_ The uri to retrieve for use in the test.
+content | _(Required)_ The content of the uri used when running the test. Name corresponds to the class name containing the comparison methods. (see below Content Classes and Methods section)
+operator | _(Required)_ The comparison to be used when running the test. Name corresponds to the method of the content class used. (see below Content Classes and Methods section)
+args | _(Optional)_ An additional value passed to the operator method of the content class. (see below Content Classes and Methods section)
+
+### Content Classes and Comparison Methods
+Reporter ships with two content classes that allow you to execute a variety of tests against retrieved content. Additional custom classes can be plugged into Reporter to give richer test functionality.
+
+__html Content Class - [/lib/content/Html.php](/lib/content/Html.php)__
+
+Operator | Description
+------------- | -------------
+contains  | Test whether the html contents contains the value specified by the args value.
+!contains  | Test whether the html contents does not contain the value specified by the args value.
+
+__status Content Class - [/lib/content/Status.php](/lib/content/Status.php)__
+
+Operator | Description
+------------- | -------------
+=  | Test whether the html response status code is equal to the value specified by the args value.
+!=  | Test whether the html response status code is not equal to the value specified by the args value.
+<  | Test whether the html response status code is less than the value specified by the args value.
+<=  | Test whether the html response status code is less than or equal to the value specified by the args value.
+>  | Test whether the html response status code is greater than the value specified by the args value.
+>=  | Test whether the html response status code is greater than or equal to the value specified by the args value.
+
+#### Custom Content Classes
+
+_Coming soon_
 
