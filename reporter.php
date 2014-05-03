@@ -24,7 +24,9 @@ if (isset($options['test'])) {
 if (isset($config['php_mailer_location']) && !is_readable($config['php_mailer_location'])) {
 	trigger_error('PHPMailer include location could not found or is not readable.', E_USER_ERROR);
 }
-require_once $config['php_mailer_location'];
+else if (isset($config['php_mailer_location']) && $config['php_mailer_location']) {
+	require_once $config['php_mailer_location'];
+}
 
 $reporter = new \Reporter\Reporter($config);
 $reporter->run();
