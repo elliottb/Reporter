@@ -76,7 +76,10 @@ class Notifier
 	public function sendResults($result_set, $test_config) 
 	{
 		$plaintext = '';
-		$html = "<table style=\"border:1px solid grey;border-collapse:collapse;\">
+
+		$html = isset($test_config->description) ? '<p>' . $test_config->description . '</p>' : '';
+
+		$html .= "<table style=\"border:1px solid grey;border-collapse:collapse;\">
 			<tr>
 				<th style=\"background-color:#FAFAFA;padding:2px 6px;text-align:left;\">Test Name</th>
 				<th style=\"background-color:#FAFAFA;padding:2px 6px;text-align:left;\">Logic</th>
