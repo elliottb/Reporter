@@ -127,8 +127,8 @@ class Notifier
 
 		$emails = $test_config->emails;
 		if (is_array($emails)) {
-			foreach($emails as $email_object) {
-				$this->phpmailer->AddAddress($email_object->email);
+			foreach($emails as $email) {
+				$this->phpmailer->AddAddress($email);
 			}	
 		}
 

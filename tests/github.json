@@ -2,9 +2,8 @@
 	"name":"Github Tests",
 	"description":"These tests determine the status of the Github homepage",
 	"emails":[
-		{
-			"email":"test@me.com"
-		}
+		"test@me.com",
+		"test@you.com"
 	],
 	"tests":[
 		{
