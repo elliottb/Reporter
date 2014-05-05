@@ -110,7 +110,55 @@ Operator | Description
 >  | Test whether the html response status code is greater than the value specified by the args value.
 >=  | Test whether the html response status code is greater than or equal to the value specified by the args value.
 
+
+Content Class and Operator Example from [github.json](master/tests/github.json)
+```
+{
+    "name":"GitHub Content Test",
+    "uri":"http:\/\/github.com",
+    "content":"html",
+    "operator":"contains",
+    "args":"GitHub"
+},
+{
+    "name":"GitHub Status Test",
+    "uri":"https:\/\/github.com",
+    "content":"status",
+    "operator":"=",
+    "args":"200"
+}
+```
+
 #### Custom Content Classes
 
-_Coming soon_
+You can create your own content classes to execute specialized tests against your test uris. Create a class in [/lib/content](/lib/content) with the same namespace declaration as the existing Reporter content classes. This class name corresponds to the content property you would reference in the test setup, in lowercase. For example, if your class was named Language, you would reference the content class by putting `"content":"language",` in your test config.
 
+Within this class, you can create methods using any of the [existing supported operator names](master/lib/Reporter.php#L149-L160). Or, you can declare a new operator name.
+
+_Existing Operator Names:_
+
+Operator | Method Naming
+------------- | -------------
+contains  | contains
+!contains  | doesntContain
+=  | equal
+!=  | notEqual
+<  | lessThan
+<=  | lessThanEqual
+>  | greaterThan
+>=  | greaterThanEqual
+
+_Custom operator names_
+
+An operator not in the above list will result in a method being called that is the same name as the operator. For example in your test file, if you specify a content class of language and an operator of isFoul, the method language::isFoul() will be called as part of your test.
+
+_Method Signatures_
+
+All method signatures, both for custom and existing operators, should be in the same format: a public, static method with two arguments. The first argument is the $arg that you are evaluating against. In the above test config for the GitHub Status Test, this was:  `"args":"200"`. The second argument is the response object containing the response from retrieving the contents of your specified uri. There are several methods you can execute against this $response_object, [detailed in the Response class](master/lib/Response.php#L90-L114).
+
+```
+public static function equal($arg, \Reporter\Response $response_object)
+{
+    return ($arg === $response_object->getStatusCode());
+}
+```
