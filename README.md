@@ -95,7 +95,7 @@ __Options Contents - a top level property (see above)__
 
 Variable | Description
 ------------- | -------------
-email_level  | _(Optional)_ When to send results via email after running a test. Valid values: `skip`, `fail`, `all`. Skip will only send results when the test results contain a skip or fail result. Fail (default value when unspecified) will only send results when test results contain a fail value. All always sends test results.
+email_level  | _(Optional)_ When to send results via email after running a test. Valid values: `skip`, `fail`, `all`. Skip will only send results when the test results contain a skip or fail result. Fail (default value when unspecified) will only send results when test results contain a fail value. All will always sends test results, even if there are no skips or fails.
 
 __Test Contents - properties of the test object, which is an array element of tests (see above)__
 
