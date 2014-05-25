@@ -9,7 +9,6 @@
 
 ### What Reporter Isn't
 - A comprehensive network or system health monitoring system
-- Simple to setup for **non** network admins and developers
 
 
 ### Use Cases
@@ -180,3 +179,12 @@ public static function equal($arg, \Reporter\Response $response_object)
     return ($arg === $response_object->getStatusCode());
 }
 ```
+
+### Extended Usage Example: Running on Cron
+
+Instead of running Reporter tests ad-hoc, you may want to run them continually using your server's cron. Here's an example setup:
+
+1. `crontab -e` as root or user you want to execute these tests as.
+2. Add the line `*/6 * * * * php /opt/Reporter/reporter.php --test=github.json` This will run this test every 6 minutes. Note the full path to Reporter in the call.
+3. `Ctr+x` followed by `y` to save.
+
