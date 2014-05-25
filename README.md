@@ -60,6 +60,22 @@ php reporter.php --test=github.json
 php reporter.php --test=/opt/tests/github.json
 ```
 
+```
+vagrant@reporter:/vagrant/Reporter$ php reporter.php --test=github.json
+--------------------------------------------------------------------------------
+
+Executing test file Github Tests: 2014-05-25 16:51:50 UTC
+--------------------------------------------------------------------------------
+
+GitHub Content Test: PASS
+GitHub Content Test 2: PASS
+GitHub Status Test: PASS
+--------------------------------------------------------------------------------
+
+Test complete: Passes: 3 | Fails: 0 | Skips: 0: 2014-05-25 16:51:56 UTC
+--------------------------------------------------------------------------------
+```
+
 ### Test Configuration
 Reporter comes with a sample testfile [github.json](tests/github.json). You can name a test whatever you want as long as you end with the file ending specified by the test_file_extension var in your [config.ini](config.ini.sample) file. Test files must be valid json. For help debugging invalid json, try using http://json.parser.online.fr.  
 
