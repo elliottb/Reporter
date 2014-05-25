@@ -1,6 +1,6 @@
 <?php
 
-namespace Reporter\content;
+namespace Reporter\Content;
 
 class Html
 {
