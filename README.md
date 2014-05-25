@@ -60,6 +60,8 @@ php reporter.php --test=github.json
 php reporter.php --test=/opt/tests/github.json
 ```
 
+_Example Usage and Output_
+
 ```
 vagrant@reporter:/vagrant/Reporter$ php reporter.php --test=github.json
 --------------------------------------------------------------------------------
