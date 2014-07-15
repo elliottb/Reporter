@@ -16,6 +16,7 @@ $options = getopt('', $longopts);
 $config_file = isset($options['config']) ? $options['config']: 'config.ini';
 $config = parse_ini_file($config_file);
 $config['include_base'] = rtrim(dirname(__FILE__), '/') . '/';
+chdir($config['include_base']);
 
 if (isset($options['test'])) {
 	$config['test_file'] = $options['test'];
