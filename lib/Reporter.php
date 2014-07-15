@@ -10,7 +10,7 @@ class Reporter
 	protected $logfile;
 	protected $notifier;
 
-	public function __construct($config) 
+	public function __construct($config)
 	{
 		$this->config = $config;
 		if (!$this->parseConfig($config)) {
@@ -23,7 +23,7 @@ class Reporter
 		}
 	}
 
-	public function run() 
+	public function run()
 	{
 		if ($this->config['test_file']) {
 			if (is_readable($this->config['test_file'])) {
@@ -33,13 +33,20 @@ class Reporter
 			} else {
 				trigger_error('Could not read specified test file: ' . escapeshellcmd($this->config['test_file']), E_USER_ERROR);
 			}
-
 		} else {
 			$this->output('Running all tests');
+			$test_files = array_diff(scandir($this->config['include_base'] . $this->config['test_folder']), array('..', '.'));
+			foreach ($test_files as $test_file) {
+				if (is_readable($this->config['include_base'] . $this->config['test_folder'] . '/' . $test_file)) {
+					$this->processTestFile($this->config['include_base'] . $this->config['test_folder'] . '/' . $test_file);
+				} else {
+					trigger_error('Could not read specified test file: ' . escapeshellcmd($test_file), E_USER_WARNING);
+				}	
+			}
 		}
 	}
 
-	protected function parseConfig($config) 
+	protected function parseConfig($config)
 	{
 		if (isset($this->config['logfile']) && $logfile = $this->config['logfile']) {
 			if (is_writable($logfile) || $handle = fopen($logfile, 'w')) {
@@ -56,7 +63,7 @@ class Reporter
 		return !(bool) error_get_last();
 	}
 
-	protected function processTestFile($filepath) 
+	protected function processTestFile($filepath)
 	{
 		if ($this->validateTestFilename($filepath)) {
 			if ($contents = self::retrieveTestFileContents($filepath)) {
@@ -78,19 +85,19 @@ class Reporter
 		}
 	}
 
-	protected function validateTestFilename($filepath) 
+	protected function validateTestFilename($filepath)
 	{
 		$path_parts = pathinfo($filepath);
 		return $path_parts['extension'] == $this->config['test_file_extension'];
 	}
 
-	protected static function retrieveTestFileContents($filepath) 
+	protected static function retrieveTestFileContents($filepath)
 	{
 		$contents = file_get_contents($filepath);
 		return $contents;
 	}
 
-	protected static function parseTestFileContents($contents) 
+	protected static function parseTestFileContents($contents)
 	{
 		if ($config = json_decode($contents)) {
 			return $config;
@@ -99,7 +106,7 @@ class Reporter
 	}
 
 	protected static function testNotificationLevelMet($test_config, $result_set) 
-	{	
+	{
 		$notification_level = isset($test_config->options->email_level) ? $test_config->options->email_level : null;
 
 		switch ($notification_level) {
@@ -191,7 +198,7 @@ class Reporter
 		return true;
 	}
 
-	protected function getResponse($uri) 
+	protected function getResponse($uri)
 	{
 		//use this content if already retrieved during this batch
 		if (isset($this->remote_content[$uri])) {
@@ -239,7 +246,7 @@ class Reporter
 		return false;
 	}
 
-	protected function output($msg) 
+	protected function output($msg)
 	{
 		if ($this->display_output) {
 			echo $msg . "\n";
