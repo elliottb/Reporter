@@ -170,11 +170,18 @@ class Reporter
 
 			try {
 				$response_object = new \Reporter\Response($this->getResponse($uri));
-			} catch (Exception $e) {
+			} catch (\Reporter\HostConnectionException $e) {
 				$result_set->setFail($single_test_config);
 				$msg = "- $name: FAIL";
 				$this->output($msg);
 				$msg = '--Error retrieving URL: ' . $e->getMessage();
+				$this->output($msg);
+				return false;
+			} catch (\Exception $e) {
+				$result_set->setSkipped($single_test_config);
+				$msg = "- $name: SKIPPED";
+				$this->output($msg);
+				$msg = '--Error retrieving URL - may be a Reporter system issue: ' . $e->getMessage();
 				$this->output($msg);
 				return false;
 			}
@@ -206,6 +213,7 @@ class Reporter
 		}
 
 		$contents = self::retrieveURI($uri);
+
 		$this->remote_content[$uri] = $contents;
 		return $contents;
 	}
@@ -222,7 +230,12 @@ class Reporter
 
 		// TODO: will this also test an empty response or a 404?
 		if (!$contents = curl_exec($ch)) {
-			throw new \Exception(curl_error($ch));
+			if (curl_errno($ch) == CURLE_COULDNT_RESOLVE_HOST || curl_errno($ch) == CURLE_COULDNT_CONNECT) {
+				throw new \Reporter\HostConnectionException(curl_error($ch));
+			}
+			else {
+				throw new \Exception(curl_error($ch));
+			}
 			curl_close($ch);
 			return false;
 		}
