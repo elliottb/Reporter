@@ -18,6 +18,9 @@ logfile = 'reporter_output.log';
 ; Display output when running tests.
 display_output = true;
 
+; Timezone.
+timezone = 'UTC';
+
 [PHPMailer Settings]
 
 ; Set location of PHPMailer. If empty, email notifications won't be available

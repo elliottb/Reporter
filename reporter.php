@@ -22,6 +22,10 @@ if (isset($options['test'])) {
 	$config['test_file'] = $options['test'];
 }
 
+if (isset($config['timezone'])) {
+	date_default_timezone_set($config['timezone']);
+}
+
 if (isset($config['php_mailer_location']) && !is_readable($config['php_mailer_location'])) {
 	trigger_error('PHPMailer include location could not found or is not readable.', E_USER_ERROR);
 }
