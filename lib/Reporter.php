@@ -222,8 +222,8 @@ class Reporter
 
 		// TODO: will this also test an empty response or a 404?
 		if (!$contents = curl_exec($ch)) {
-			curl_close($ch);
 			throw new \Exception(curl_error($ch));
+			curl_close($ch);
 			return false;
 		}
 
