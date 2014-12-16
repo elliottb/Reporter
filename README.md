@@ -185,6 +185,6 @@ public static function equal($arg, \Reporter\Response $response_object)
 Instead of running Reporter tests ad-hoc, you may want to run them continually using your server's cron. Here's an example setup:
 
 1. `crontab -e` as root or user you want to execute these tests as.
-2. Add the line `*/6 * * * * php /opt/Reporter/reporter.php --test=github.json` This will run this test every 6 minutes. Note the full path to Reporter in the call.
+2. Add the line `*/6 * * * * php /opt/Reporter/reporter.php --test=github.json` This will run this test every 6 minutes. Note that you'll need to replace the above path with the path to reporter.php on your filesystem.
 3. `Ctr+x` followed by `y` to save.
 
