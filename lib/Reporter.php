@@ -144,14 +144,7 @@ class Reporter
 		$args = $single_test_config->args;
 
 		$namespace_prefix = "\Reporter\Content\\";
-
-		switch ($content) {
-			case 'status':
-			case 'html':
-				$class = $namespace_prefix . ucfirst($content); break;
-			default: 
-				$class = $namespace_prefix . $content; break;
-		}
+		$class = $namespace_prefix . ucfirst($content);
 
 		switch ($operator) {
 			case '=': $method = 'equal'; break;
