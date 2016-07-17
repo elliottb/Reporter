@@ -1,2 +1,4 @@
 config.ini
 reporter_output.log
+composer.lock
+
