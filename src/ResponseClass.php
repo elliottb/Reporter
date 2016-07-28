@@ -2,7 +2,7 @@
 
 namespace Reporter;
 
-class Response
+class ResponseClass
 {
 	protected $status_code;
 	protected $headers;
@@ -12,7 +12,11 @@ class Response
 	public function __construct($curl_response) 
 	{
 		$this->raw_response = $curl_response;
-		$this->parseCurlResponse($curl_response);
+
+		$parsed_contents = $this->parseCurlResponse($curl_response);
+		$this->status_code = $parsed_contents->status_code;
+		$this->headers = $parsed_contents->headers;
+		$this->html = $parsed_contents->html;
 	}
 
 	protected function parseCurlResponse($curl_response) 
@@ -48,13 +52,21 @@ class Response
 			$line_number++;
 		}
 
-		$this->html = implode("\n", $html);
-		$this->parseHeaders($headers);
+		$header_object = $this->parseHeaders($headers);
+
+		$parsed_contents = new \Stdclass;
+		$parsed_contents->html = implode("\n", $html);
+		$parsed_contents->status_code = $header_object->status_code;
+		$parsed_contents->headers = $header_object->headers;
+
+		return $parsed_contents;
+
 	}
 
 	protected function parseHeaders(Array $headers) 
-	{	
+	{
 		$filtered_headers = array();
+		$status_code = null;
 		//headers is an array of header sets, each containing an array of indivudual headers
 		foreach ($headers as $set_index => $header_set) {
 			foreach ($header_set as $header) {
@@ -70,7 +82,7 @@ class Response
 					$header_value = substr($header, $first_space, $next_space - $first_space);
 					//store numeric status code too
 					if ($header_value) {
-						$this->status_code = $header_value;
+						$status_code = $header_value;
 						$filtered_headers[$set_index][$header_name] = $header_value;
 					}
 				} else {
@@ -84,7 +96,11 @@ class Response
 				}
 			}
 		}
-		$this->headers = $filtered_headers;
+
+		$header_object = new \StdClass;
+		$header_object->status_code = $status_code;
+		$header_object->headers = $filtered_headers;
+		return $header_object;
 	}
 
 	public function getHtml() 
@@ -96,7 +112,6 @@ class Response
 	{
 		$header_sets = $this->headers;
 		$last_header_set = array_pop($header_sets);
-		//print_r($last_header_set);
 		if (isset($last_header_set[$header])) {
 			return $last_header_set[$header];
 		}

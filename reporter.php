@@ -2,13 +2,10 @@
 
 error_reporting(E_ALL ^ E_NOTICE);
 if (function_exists('xdebug_disable')) {
-	xdebug_disable();
+	//xdebug_disable();
 }
 
-require_once 'lib/Psr4Autoloader.php';
-$loader = new \Reporter\Psr4Autoloader;
-$loader->register();
-$loader->addNamespace('Reporter', 'lib');
+require_once 'autoload.php';
 
 $longopts  = array(
     "config::",

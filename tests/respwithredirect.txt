@@ -1,0 +1,37 @@
+HTTP/1.1 302 Found
+Date: Thu, 28 Jul 2016 21:34:26 GMT
+Server: Apache/2.2.22 (Debian)
+Location: http://www.msnbc.com/msnbc/justice-stephen-breyer-executions-are-often-arbitrary
+Vary: Accept-Encoding
+Content-Length: 348
+Content-Type: text/html; charset=iso-8859-1
+
+HTTP/1.1 200 OK
+Server: nginx
+Content-Type: text/html; charset=utf-8
+X-Drupal-Cache: MISS
+X-Content-Type-Options: nosniff
+ETag: "1469740470-1"
+Content-Language: en
+X-MSNBC-EdgeTTL: 2h
+Link: <http://www.msnbc.com/sites/msnbc/themes/leanforward/images/site-header/msnbc-logo-card.png>; rel="image_src",<http://www.msnbc.com/msnbc/justice-stephen-breyer-executions-are-often-arbitrary>; rel="canonical",<http://www.msnbc.com/node/695476>; rel="shortlink"
+X-UA-Compatible: IE=Edge,chrome=1
+Last-Modified: Thu, 28 Jul 2016 21:14:30 GMT
+X-Request-ID: v-4625474e-5508-11e6-bb17-22000b76685b
+X-AH-Environment: prod
+X-Varnish: 1329263023
+X-Age: 0
+Cache-Control: max-age=1800
+Expires: Thu, 28 Jul 2016 22:04:26 GMT
+Date: Thu, 28 Jul 2016 21:34:26 GMT
+Transfer-Encoding:  chunked
+Connection: keep-alive
+Connection: Transfer-Encoding
+
+<!DOCTYPE html>
+<html xmlns:og="http://opengraphprotocol.org/schema/" xmlns:fb="http://www.facebook.com/2008/fbml">
+  <head>
+  </head>
+  <body>
+  </body>
+</html>
