@@ -14,8 +14,6 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 		$config->operator = "contains";
 		$config->args = "Hello Test!";
 
-		//$config = $this->getResultSetObject();
-
 		$result_set = new Result($config);
 		
 		$this->assertSame($result_set->name, $config->name);
@@ -24,5 +22,4 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 		$this->assertSame($result_set->operator, $config->operator);
 		$this->assertSame($result_set->args, $config->args);
 	}
-
 }

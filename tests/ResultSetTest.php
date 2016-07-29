@@ -64,5 +64,4 @@ class ResultSetTest extends \PHPUnit_Framework_TestCase
 		$this->assertTrue(count($results) == 3);
 		$this->assertContainsOnlyInstancesOf(Result::class, $results);
 	}
-
 }

@@ -5,13 +5,12 @@ use Reporter;
 
 class ResponseTest extends \PHPUnit_Framework_TestCase
 {
-
 	public function testParseCurlResponseTextfile()
 	{
 		$resp = file_get_contents('tests/resp1.txt');
 		list($headers, $body) = explode(PHP_EOL . PHP_EOL, $resp, 2);
 
-		$respObject = new ResponseClass($resp);
+		$respObject = new Response($resp);
 		$this->assertEquals($respObject->getStatusCode(), 200);
 		$this->assertEquals($respObject->getHtml(), $body);
 		$this->assertEquals($respObject->getRawResponse(), $resp);
@@ -22,7 +21,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 	{
 		$resp = file_get_contents('tests/resp2.txt');
 		list($headers, $body) = explode(PHP_EOL . PHP_EOL, $resp, 2);
-		$respObject = new ResponseClass($resp);
+		$respObject = new Response($resp);
 
 		$this->assertEquals(200, $respObject->getStatusCode());
 		$this->assertEquals($body, $respObject->getHtml());
@@ -34,8 +33,8 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 	public function testRedirectedResponsePage()
 	{
 		$resp = file_get_contents('tests/respwithredirect.txt');
-		list($headers, $body) = explode(PHP_EOL . PHP_EOL, $resp, 2);
-		$respObject = new ResponseClass($resp);
+		list($headers, $headers2, $body) = explode(PHP_EOL . PHP_EOL, $resp, 3);
+		$respObject = new Response($resp);
 
 		$this->assertEquals(200, $respObject->getStatusCode());
 		$this->assertEquals($body, $respObject->getHtml());

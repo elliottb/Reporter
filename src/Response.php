@@ -2,7 +2,7 @@
 
 namespace Reporter;
 
-class ResponseClass
+class Response
 {
 	protected $status_code;
 	protected $headers;
