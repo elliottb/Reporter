@@ -12,9 +12,11 @@ class Reporter
 
 	public function __construct($config)
 	{
-		$this->config = $config;
 		if (!$this->parseConfig($config)) {
 			trigger_error('There were errors parsing the config file', E_USER_ERROR);
+		}
+		else {
+			$this->config = $config;
 		}
 
 		// Only initiate Notifier if php_mailer_location is set
@@ -48,16 +50,16 @@ class Reporter
 
 	protected function parseConfig($config)
 	{
-		if (isset($this->config['logfile']) && $logfile = $this->config['logfile']) {
-			if (is_writable($logfile) || $handle = fopen($logfile, 'w')) {
+		if (isset($config['logfile']) && $logfile = $config['logfile']) {
+			if (file_exists($logfile) && is_writable($logfile) && $handle = fopen($logfile, 'w')) {
 				$this->logfile = $logfile;
 			} else {
-				trigger_error('Could not open logfile for writing', E_USER_WARNING);
+				trigger_error('Could not open logfile for writing', E_USER_ERROR);
 			}	
 		}
 
-		if (isset($this->config['display_output'])) {
-			$this->display_output = (bool) $this->config['display_output'];
+		if (isset($config['display_output'])) {
+			$this->display_output = (bool) $config['display_output'];
 		}
 
 		return !(bool) error_get_last();

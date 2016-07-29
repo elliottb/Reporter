@@ -11,6 +11,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 		list($headers, $body) = explode(PHP_EOL . PHP_EOL, $resp, 2);
 
 		$respObject = new Response($resp);
+
 		$this->assertEquals($respObject->getStatusCode(), 200);
 		$this->assertEquals($respObject->getHtml(), $body);
 		$this->assertEquals($respObject->getRawResponse(), $resp);
@@ -21,6 +22,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 	{
 		$resp = file_get_contents('tests/resp2.txt');
 		list($headers, $body) = explode(PHP_EOL . PHP_EOL, $resp, 2);
+
 		$respObject = new Response($resp);
 
 		$this->assertEquals(200, $respObject->getStatusCode());
@@ -34,6 +36,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 	{
 		$resp = file_get_contents('tests/respwithredirect.txt');
 		list($headers, $headers2, $body) = explode(PHP_EOL . PHP_EOL, $resp, 3);
+		
 		$respObject = new Response($resp);
 
 		$this->assertEquals(200, $respObject->getStatusCode());

@@ -16,9 +16,17 @@ class ResultSetTest extends \PHPUnit_Framework_TestCase
 		return $config;
 	}
 
-	public function testSetFail()
-	{
+	public function testResultSetInstance() {
 		$result_set = new ResultSet();
+		$this->assertInstanceOf(ResultSet::class, $result_set);
+		return $result_set;
+	}
+
+ 	/**
+     * @depends testResultSetInstance
+     */
+	public function testSetFail(ResultSet $result_set)
+	{
 		$config = $this->getResultSetObject();
 		$result_set->setFail($config);
 
@@ -27,38 +35,37 @@ class ResultSetTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($result_set->getSkipCount(), 0);
 	}
 
-	public function testSetPass()
+	/**
+     * @depends testResultSetInstance
+     */
+	public function testSetPass(ResultSet $result_set)
 	{
-		$result_set = new ResultSet();
 		$config = $this->getResultSetObject();
 		$result_set->setPass($config);
 
-		$this->assertEquals($result_set->getFailCount(), 0);
+		$this->assertEquals($result_set->getFailCount(), 1);
 		$this->assertEquals($result_set->getPassCount(), 1);
 		$this->assertEquals($result_set->getSkipCount(), 0);
 	}
 
-	public function testSetSkip()
+	/**
+     * @depends testResultSetInstance
+     */
+	public function testSetSkip(ResultSet $result_set)
 	{
-		$result_set = new ResultSet();
 		$config = $this->getResultSetObject();
 		$result_set->setSkipped($config);
 
-		$this->assertEquals($result_set->getFailCount(), 0);
-		$this->assertEquals($result_set->getPassCount(), 0);
+		$this->assertEquals($result_set->getFailCount(), 1);
+		$this->assertEquals($result_set->getPassCount(), 1);
 		$this->assertEquals($result_set->getSkipCount(), 1);
 	}
 
-	public function testGetResults()
+	/**
+     * @depends testResultSetInstance
+     */
+	public function testGetResults(ResultSet $result_set)
 	{
-		$result_set = new ResultSet();
-
-		$config = $this->getResultSetObject();
-
-		$result_set->setPass($config);
-		$result_set->setSkipped($config);
-		$result_set->setFail($config);
-
 		$results = $result_set->getResults();
 		$this->assertTrue(is_array($results));
 		$this->assertTrue(count($results) == 3);
