@@ -8,13 +8,8 @@ EXPOSE 80
 ADD / /var/www/html/reporter
 WORKDIR /var/www/html/reporter
 
-#RUN sudo chown -R www-data:www-data /var/www
-#RUN chmod go-rwx /var/www
-#RUN chmod go+x /var/www
-#RUN chgrp -R www-data /var/www
-#RUN chmod -R go-rwx /var/www
-#RUN chmod -R g+rx /var/www
-#RUN chmod -R g+rwx /var/www
-
 RUN php -v
-RUN cd /var/www/html/reporter && php composer.phar install
+RUN cd /var/www/html/reporter
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer
+RUN composer install --prefer-source --no-interaction

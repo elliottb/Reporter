@@ -1,0 +1,18 @@
+HTTP/1.1 200 OK
+Date: Wed, 20 Jul 2016 22:08:10 GMT
+Server: Apache/2.2.22 (Debian)
+Last-Modified: Thu, 23 Jun 2016 23:30:58 GMT
+ETag: "db40d-5b-535fa72393080"
+Accept-Ranges: bytes
+Content-Length: 91
+Cache-Control: max-age=604800
+Expires: Wed, 27 Jul 2016 22:08:10 GMT
+Vary: Accept-Encoding
+Access-Control-Allow-Origin: *
+Content-Type: text/plain
+
+/* TEAM */
+Developer: Elliott Brueggeman
+Twitter: @ebrueg
+From: Seattle, WA, United States
+resp.txt (END)

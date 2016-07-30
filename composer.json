@@ -1,5 +1,14 @@
 {
-    "require-dev": {
-        "phpunit/phpunit": "5.4.*"
+    "require": {
+        "phpunit/phpunit": "4.8.*"
+    },
+    "autoload": {
+        "psr-4": { 
+        	"Reporter\\": ["src", "tests"]
+        }
+    },
+    "scripts": {
+        "test": "phpunit --coverage-text --coverage-html tmp",
+        "format": "phpcbf --standard=psr2 src/"
     }
 }
