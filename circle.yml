@@ -1,15 +1,15 @@
 machine:
-	timezone:
-		America/Los_Angeles
-	php:
-		version: 5.6
+    timezone:
+        America/Los_Angeles
+    php:
+        version: 5.6
 
 test:
-	override:
-		 override:
-   		 - mkdir -p $CIRCLE_TEST_REPORTS/phpunit
-   		 - composer test-circle
+    override:
+         override:
+         - mkdir -p $CIRCLE_TEST_REPORTS/phpunit
+         - composer test-circle
 
 machine:
-	hosts:
-		local.reporter.com: 127.0.0.1
+    hosts:
+        local.reporter.com: 127.0.0.1
