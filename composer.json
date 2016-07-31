@@ -8,7 +8,7 @@
         }
     },
     "scripts": {
-        "test-circle": "phpunit --coverage-text",
+        "test-circle": "phpunit --log-junit $CIRCLE_TEST_REPORTS/phpunit/junit.xml tests",
         "test": "phpunit --coverage-text --coverage-html tmp",
         "format": "phpcbf --standard=psr2 src/"
     }
