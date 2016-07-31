@@ -5,10 +5,9 @@ machine:
         version: 5.6
 
 test:
-    override:
-         override:
-         - mkdir -p $CIRCLE_TEST_REPORTS/phpunit
-         - composer test-circle
+     override:
+     - mkdir -p $CIRCLE_TEST_REPORTS/phpunit
+     - composer test-circle
 
 machine:
     hosts:
