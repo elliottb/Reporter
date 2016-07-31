@@ -5,6 +5,9 @@ use Reporter;
 
 class ReporterTest extends \PHPUnit_Framework_TestCase
 {
+	/**
+	 * @expectedException
+	 */
 	public function testInstantiation()
 	{
 		$config_file = 'config.ini.sample';
@@ -27,7 +30,6 @@ class ReporterTest extends \PHPUnit_Framework_TestCase
 		$property = $class->getProperty('logfile');
 		$property->setAccessible( true );
 		$this->assertEquals($property->getValue($reporter), $config['logfile']);
-		echo $config['logfile'];
 	}
 
 	/**

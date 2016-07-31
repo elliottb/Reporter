@@ -4,11 +4,11 @@ RUN apt-get update && apt-get -y upgrade && DEBIAN_FRONTEND=noninteractive apt-g
 
 EXPOSE 80
 
-# Copy site into place.
 ADD / /var/www/html/reporter
 WORKDIR /var/www/html/reporter
 
-RUN php -v
+RUN mkdir /var/log/reporter && touch /var/log/reporter/output.log
+
 RUN cd /var/www/html/reporter
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer

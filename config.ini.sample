@@ -13,7 +13,7 @@ test_file_extension = 'json';
 
 ; Set logfile location absolute or relative to the Reporter root. Set empty,
 ; null, or uncomment to not use a logfile.
-logfile = 'reporter_output.log';
+logfile = '/var/log/reporter/output.log';
 
 ; Display output when running tests.
 display_output = true;
