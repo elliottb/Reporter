@@ -51,7 +51,7 @@ class Reporter
 	protected function parseConfig($config)
 	{
 		if (isset($config['logfile']) && $logfile = $config['logfile']) {
-			if (file_exists($logfile) && is_writable($logfile) && $handle = fopen($logfile, 'w')) {
+			if ($handle = fopen($logfile, 'w')) {
 				$this->logfile = $logfile;
 			} else {
 				trigger_error('Could not open logfile for writing', E_USER_ERROR);
