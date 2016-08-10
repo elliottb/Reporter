@@ -6,12 +6,12 @@ class Status
 {
 	public static function equal($arg, \Reporter\Response $response_object)
 	{
-		return ($arg === $response_object->getStatusCode());
+		return ($arg == $response_object->getStatusCode());
 	}
 
 	public static function notEqual($arg, \Reporter\Response $response_object) 
 	{
-		return ($arg !== $response_object->getStatusCode());
+		return ($arg != $response_object->getStatusCode());
 	}
 
 	public static function lessThan($arg, \Reporter\Response $response_object)

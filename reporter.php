@@ -37,5 +37,5 @@ else if (isset($config['php_mailer_location']) && $config['php_mailer_location']
 	require_once $config['php_mailer_location'];
 }
 
-$reporter = new \Reporter\Reporter($config);
-$reporter->run();
+$reporter = new \Reporter\Reporter();
+$reporter->run($config);

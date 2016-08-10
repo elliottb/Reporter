@@ -4,48 +4,55 @@ namespace Reporter;
 
 class Reporter
 {
-	protected $config;
 	protected $remote_content;
 	protected $display_output = true;
 	protected $logfile;
 	protected $notifier;
 
-	public function __construct($config)
+	public function __construct() {}
+
+	public function run($config)
 	{
 		if (!$this->parseConfig($config)) {
 			trigger_error('There were errors parsing the config file', E_USER_ERROR);
 		}
-		else {
-			$this->config = $config;
-		}
 
 		// Only initiate Notifier if php_mailer_location is set
 		if (isset($config['php_mailer_location']) && $config['php_mailer_location']) {
-			$this->notifier = new \Reporter\Notifier($this->config);
+			$this->notifier = new \Reporter\Notifier($config);
+		}
+
+		$test_files = $this->getTestFiles($config);
+		foreach ($test_files as $test_file) { 
+			$this->processTestFile($test_file, $config);
 		}
 	}
 
-	public function run()
-	{
-		if ($this->config['test_file']) {
-			if (is_readable($this->config['test_file'])) {
-				$this->processTestFile($this->config['test_file']);
-			} elseif (is_readable($this->config['include_base'] . $this->config['test_folder'] . '/' . $this->config['test_file'])) {
-				$this->processTestFile($this->config['include_base'] . $this->config['test_folder'] . '/' . $this->config['test_file']);
-			} else {
-				trigger_error('Could not read specified test file: ' . escapeshellcmd($this->config['test_file']), E_USER_ERROR);
+	protected function getTestFiles($config) {
+		$test_files = array();
+		if ($config['test_file']) {
+			if (!$this->validateTestFilename($config['test_file'], $config)) {
+				trigger_error('Filename ' . escapeshellcmd($config['test_file']) . ' did not validate', E_USER_ERROR);
 			}
-		} else {
-			$this->output('Running all tests');
-			$test_files = array_diff(scandir($this->config['include_base'] . $this->config['test_folder']), array('..', '.'));
-			foreach ($test_files as $test_file) {
-				if (is_readable($this->config['include_base'] . $this->config['test_folder'] . '/' . $test_file)) {
-					$this->processTestFile($this->config['include_base'] . $this->config['test_folder'] . '/' . $test_file);
+			if (is_readable($config['test_file'])) {
+				$test_files[] = $config['test_file'];
+			} elseif (is_readable($config['include_base'] . $config['test_folder'] . '/' . $config['test_file'])) {
+				$test_files[] = $config['include_base'] . $config['test_folder'] . '/' . $config['test_file'];
+			} else {
+				trigger_error('Could not read specified test file: ' . escapeshellcmd($config['test_file']), E_USER_ERROR);
+			}
+		}
+		else {
+			$test_file_candidates = glob($config['include_base'] . $config['test_folder']  . "/*." . $config['test_file_extension']);
+			foreach ($test_file_candidates as $test_file) {
+				if (is_readable($test_file)) {
+					$test_files[] = $test_file;
 				} else {
 					trigger_error('Could not read specified test file: ' . escapeshellcmd($test_file), E_USER_WARNING);
 				}	
 			}
 		}
+		return $test_files;
 	}
 
 	protected function parseConfig($config)
@@ -65,32 +72,27 @@ class Reporter
 		return !(bool) error_get_last();
 	}
 
-	protected function processTestFile($filepath)
+	protected function processTestFile($filepath, $config)
 	{
-		if ($this->validateTestFilename($filepath)) {
-			if ($contents = self::retrieveTestFileContents($filepath)) {
-				if (($test_config = self::parseTestFileContents($contents)) !== false) {
-					$result_set = new \Reporter\ResultSet();
-					$this->runTestFile($test_config, $result_set);
-					if (self::testNotificationLevelMet($test_config, $result_set) && $this->notifier && $this->notifier->sendResults($result_set, $test_config)) {
-						$this->output('Results Emailed.');
-					}
-
-				} else {
-					trigger_error('Test file ' .  escapeshellcmd($filepath) . ' is not a valid json file and could not be parsed.', E_USER_ERROR);
+		if ($contents = self::retrieveTestFileContents($filepath)) {
+			if (($test_config = self::parseTestFileContents($contents)) !== false) {
+				$result_set = new \Reporter\ResultSet();
+				$this->runTestFile($test_config, $result_set);
+				if (self::testNotificationLevelMet($test_config, $result_set) && $this->notifier && $this->notifier->sendResults($result_set, $test_config)) {
+					echo $this->formatOutput('Results Emailed.');
 				}
 			} else {
-				trigger_error('Cound not retrieve contents of ' . escapeshellcmd($filepath), E_USER_ERROR);
+				trigger_error('Test file ' .  escapeshellcmd($filepath) . ' is not a valid json file and could not be parsed.', E_USER_ERROR);
 			}
 		} else {
-			trigger_error('Filename ' . escapeshellcmd($filepath) . ' did not validate', E_USER_ERROR);
+			trigger_error('Cound not retrieve contents of ' . escapeshellcmd($filepath), E_USER_ERROR);
 		}
 	}
 
-	protected function validateTestFilename($filepath)
+	protected function validateTestFilename($filepath, $config)
 	{
 		$path_parts = pathinfo($filepath);
-		return $path_parts['extension'] == $this->config['test_file_extension'];
+		return $path_parts['extension'] == $config['test_file_extension'];
 	}
 
 	protected static function retrieveTestFileContents($filepath)
@@ -128,17 +130,18 @@ class Reporter
 		$name = $test_config->name;
 		$tests = $test_config->tests;
 
-		$this->outputHeader('Executing test file ' . $name);
+		echo $this->outputHeader('Executing test file ' . $name);
 		foreach ($tests as $single_test_config) {
-			$this->runTest($single_test_config, $result_set);
+			echo $this->runTest($single_test_config, $result_set);
 		}
 		$result_string = 'Passes: ' . $result_set->getPassCount() . ' | Fails: ' . 
 			$result_set->getFailCount().  ' | Skips: ' . $result_set->getSkipCount() ;
-		$this->outputHeader('Test complete: ' . $result_string);
+		echo $this->outputHeader('Test complete: ' . $result_string);
 	}
 
 	protected function runTest($single_test_config, ResultSet &$result_set) 
 	{
+		$output = '';
 		$name = $single_test_config->name;
 		$uri = $single_test_config->uri;
 		$content = $single_test_config->content;
@@ -168,36 +171,36 @@ class Reporter
 			} catch (\Reporter\HostConnectionException $e) {
 				$result_set->setFail($single_test_config);
 				$msg = "- $name: FAIL";
-				$this->output($msg);
+				$output .= $this->formatOutput($msg);
 				$msg = '--Error retrieving URL: ' . $e->getMessage();
-				$this->output($msg);
-				return false;
+				$output .= $this->formatOutput($msg);
+				return $output;
 			} catch (\Exception $e) {
 				$result_set->setSkipped($single_test_config);
 				$msg = "- $name: SKIPPED";
-				$this->output($msg);
+				$output .= $this->formatOutput($msg);
 				$msg = '--Error retrieving URL - may be a Reporter system issue: ' . $e->getMessage();
-				$this->output($msg);
-				return false;
+				$output .= $this->formatOutput($msg);
+				return $output;
 			}
 
 			if (!$class::$method($args, $response_object)) {
 				$result_set->setFail($single_test_config);
 				$msg = "$name: FAIL";
-				$this->output($msg);
+				$output .= $this->formatOutput($msg);
 				
 			} else {
 				$result_set->setPass($single_test_config);
 				$msg = "$name: PASS";
-				$this->output($msg);
+				$output .= $this->formatOutput($msg);
 			}
 		} else {
 			$result_set->setSkipped($single_test_config);
 			$msg = "$name: SKIPPED - content class or operator method not found";
-			$this->output($msg);
+			$output .= $this->formatOutput($msg);
 		}
 
-		return true;
+		return $output;
 	}
 
 	protected function getResponse($uri)
@@ -254,25 +257,26 @@ class Reporter
 		return false;
 	}
 
-	protected function output($msg)
+	protected function formatOutput($msg)
 	{
-		if ($this->display_output) {
-			echo $msg . "\n";
-		}
+		$output = $msg . "\n";
 		if ($this->logfile) {
 			self::writeToFile($this->logfile, $msg);
-		}	
+		}
+		return $output;
 	}
 
 	protected function outputHeader($msg)
 	{
+		$output = '';
 		$break = str_repeat('-', 80);
 		$datestamp = self::getDatestamp();
 		$msg = substr($msg, 0, 78 - (strlen($datestamp) + 1));
 		$msg = str_pad($msg . ': ' . $datestamp, 78, ' ') . ' ';
-		$this->output($break);
-		$this->output($msg);
-		$this->output($break);
+		$output .= $this->formatOutput($break);
+		$output .= $this->formatOutput($msg);
+		$output .= $this->formatOutput($break);
+		return $output;
 	}
 
 	protected static function getDatestamp() 

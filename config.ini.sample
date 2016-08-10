@@ -5,7 +5,7 @@
 [General Settings]
 
 ; Relative path from to the test files
-test_folder = 'tests';
+test_folder = 'report_config';
 
 ; File extension for test file. Test files not matching this extension will
 ; be ignored. Do not include the dot.

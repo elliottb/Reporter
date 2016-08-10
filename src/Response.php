@@ -60,7 +60,6 @@ class Response
 		$parsed_contents->headers = $header_object->headers;
 
 		return $parsed_contents;
-
 	}
 
 	protected function parseHeaders(Array $headers) 
