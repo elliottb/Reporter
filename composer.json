@@ -10,7 +10,7 @@
         }
     },
     "scripts": {
-        "test-circle": "phpunit --coverage-text --coverage-html --log-junit $CIRCLE_TEST_REPORTS/phpunit",
+        "test-circle": "phpunit --coverage-text --coverage-html --log-junit $CIRCLE_TEST_REPORTS/phpunit tests",
         "test": "phpunit --coverage-text --coverage-html tmp",
         "fix": "phpcbf --standard=psr2 src/",
         "mess": "phpmd ./src,reporter.php,autoload.php html cleancode,codesize,design,unusedcode,naming --reportfile phpmd.html --suffixes php",

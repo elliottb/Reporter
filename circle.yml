@@ -7,6 +7,7 @@ machine:
 test:
      pre:
      - mkdir -p $CIRCLE_TEST_REPORTS/phpunit
+     - touch output.log
      override:
      - composer test-circle
 
