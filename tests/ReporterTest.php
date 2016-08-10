@@ -7,8 +7,9 @@ class ReporterTest extends \PHPUnit_Framework_TestCase
 {
 	public function getConfig()
 	{
-		$config = 'config.ini.sample';
-		return parse_ini_file($config);
+		$config = parse_ini_file('config.ini.sample');
+		$config['include_base'] = './';
+		return $config;
 	}
 
 	public function testInstantiation()
@@ -26,7 +27,6 @@ class ReporterTest extends \PHPUnit_Framework_TestCase
 		$method = $class->getMethod('parseConfig');
 		$method->setAccessible(true);
 
-		//$reporter = new Reporter\Reporter($config);
 		$this->assertTrue($method->invokeArgs($reporter, array($this->getConfig())));
 
 		$property = $class->getProperty('logfile');
@@ -43,7 +43,6 @@ class ReporterTest extends \PHPUnit_Framework_TestCase
 		$method->setAccessible(true);
 
 		$test_config_string = file_get_contents('report_config/github.json');
-
 		$test_config = $method->invokeArgs($reporter, array($test_config_string));
 
 		$this->assertTrue($test_config !== false);
@@ -81,7 +80,6 @@ class ReporterTest extends \PHPUnit_Framework_TestCase
 		//Problem - test stores output, and doesn't return it. Change to return output from runTest to runTestFile and then store there instead.
 		
 		$returnVal = $method->invokeArgs($reporter, array($single_test_config, &$resultSet));
-		//print_r($resultSet);
 		$this->assertTrue(strpos($returnVal, 'GitHub Status Test: PASS') !== false);
 
 		$results = $resultSet->getResults();
@@ -104,7 +102,6 @@ class ReporterTest extends \PHPUnit_Framework_TestCase
 
 		$expected_value = array($config['include_base'] . $config['test_folder'] . '/' . $config['test_file']);
 		$return_val = $method->invokeArgs($reporter, array($config));
-
 		$this->assertTrue($return_val == $expected_value);
 	}
 
