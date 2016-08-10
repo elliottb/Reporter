@@ -1,15 +1,20 @@
 {
     "require": {
-        "phpunit/phpunit": "4.8.*"
+        "phpunit/phpunit": "4.8.*",
+        "phpmd/phpmd": "2.3",
+        "squizlabs/php_codesniffer": "^2.6"
     },
     "autoload": {
         "psr-4": { 
-        	"Reporter\\": ["src", "tests"]
+            "Reporter\\": ["src", "tests"]
         }
     },
     "scripts": {
         "test-circle": "phpunit --coverage-text --coverage-html $CIRCLE_TEST_REPORTS/phpunit",
         "test": "phpunit --coverage-text --coverage-html tmp",
-        "format": "phpcbf --standard=psr2 tmp"
+        "fix": "phpcbf --standard=psr2 src/",
+        "mess": "phpmd ./src,reporter.php,autoload.php html cleancode,codesize,design,unusedcode,naming --reportfile phpmd.html --suffixes php",
+        "mess-help": "phpmd --help",
+        "format": "phpcs --standard=psr2 src/"
     }
 }
