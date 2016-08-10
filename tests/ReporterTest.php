@@ -18,6 +18,17 @@ class ReporterTest extends \PHPUnit_Framework_TestCase
 		return $reporter;
 	}
 
+	public function getResultConfigObject() 
+	{
+		$config = new \Stdclass;
+		$config->name = "Test name";
+		$config->uri = "http://testuri";
+		$config->content = "html";
+		$config->operator = "contains";
+		$config->args = "Hello Test!";
+		return $config;
+	}
+
 	/**
 	 * @depends testInstantiation
 	 */
@@ -49,6 +60,18 @@ class ReporterTest extends \PHPUnit_Framework_TestCase
 		$this->assertTrue(gettype($test_config) == 'object');
 
 		return $test_config;
+	}
+
+	/**
+	 * @depends testInstantiation
+	 */
+	public function testParseTestFileContentsInvalid($reporter) {
+		$class = new \ReflectionClass('Reporter\Reporter');
+		$method = $class->getMethod('parseTestFileContents');
+		$method->setAccessible(true);
+
+		$invalid_json = 'foo' . file_get_contents('report_config/github.json');
+		$this->assertFalse($method->invokeArgs($reporter, array($invalid_json)));
 	}
 
 	/**
@@ -103,6 +126,75 @@ class ReporterTest extends \PHPUnit_Framework_TestCase
 		$expected_value = array($config['include_base'] . $config['test_folder'] . '/' . $config['test_file']);
 		$return_val = $method->invokeArgs($reporter, array($config));
 		$this->assertTrue($return_val == $expected_value);
+	}
+
+	/**
+	 * @depends testParseTestFileContents
+	 * @depends testInstantiation
+	 */
+	public function testNotificationLevelMet($config, $reporter) {
+
+		$resultConfigObject = $this->getResultConfigObject();
+		
+		$class = new \ReflectionClass('Reporter\Reporter');
+		$method = $class->getMethod('testNotificationLevelMet');
+		$method->setAccessible(true);
+
+		// Test default level
+		$resultSet = new ResultSet();
+
+		$resultSet->setPass($resultConfigObject);
+		$this->assertFalse($method->invokeArgs($reporter, array($config, &$resultSet)));
+		
+		// Test default after fail
+		$resultSet->setFail($resultConfigObject);
+		$this->assertTrue($method->invokeArgs($reporter, array($config, &$resultSet)));
+
+		// Test all level
+		$config->options = new \stdClass;
+		$config->options->email_level = 'all';
+		$resultSet = new ResultSet();
+		$this->assertTrue($method->invokeArgs($reporter, array($config, &$resultSet)));
+
+		// Test skip level
+		$config->options->email_level = 'skip';
+		$resultSet = new ResultSet();
+
+		// Test skip false
+		$this->assertFalse($method->invokeArgs($reporter, array($config, &$resultSet)));
+
+		// Test skip true after skipping
+		$resultSet->setSkipped($resultConfigObject);
+		$this->assertTrue($method->invokeArgs($reporter, array($config, &$resultSet)));
+		
+		// Test skip true after false
+		$resultSet = new ResultSet();
+		$resultSet->setFail($resultConfigObject);
+		$this->assertTrue($method->invokeArgs($reporter, array($config, &$resultSet)));
+	}
+
+	/**
+	 * @depends testInstantiation
+	 */
+	public function testConvertOperatorToMethod($reporter) {
+
+		$config = $this->getConfig();
+		$config['test_file'] = 'github.json';
+
+		$class = new \ReflectionClass('Reporter\Reporter');
+		$method = $class->getMethod('convertOperatorToMethod');
+		$method->setAccessible(true);
+
+		$this->assertEquals($method->invokeArgs($reporter, array('>')), 'greaterThan');
+		$this->assertEquals($method->invokeArgs($reporter, array('<')), 'lessThan');
+		$this->assertEquals($method->invokeArgs($reporter, array('=')), 'equal');
+		$this->assertEquals($method->invokeArgs($reporter, array('!=')), 'notEqual');
+		$this->assertEquals($method->invokeArgs($reporter, array('>=')), 'greaterThanEqual');
+		$this->assertEquals($method->invokeArgs($reporter, array('<=')), 'lessThanEqual');
+		$this->assertEquals($method->invokeArgs($reporter, array('>')), 'greaterThan');
+		$this->assertEquals($method->invokeArgs($reporter, array('contains')), 'contains');
+		$this->assertEquals($method->invokeArgs($reporter, array('!contain')), 'doesntContain');
+		$this->assertEquals($method->invokeArgs($reporter, array('!contains')), 'doesntContain');
 	}
 
 	/**

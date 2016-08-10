@@ -117,11 +117,11 @@ class Reporter
 			case 'all':
 				return true;
 			case 'skip': 
-				return $result_set->getFailCount() || $result_set->getSkipCount();
+				return (bool) $result_set->getFailCount() || (bool) $result_set->getSkipCount();
 			case 'fail':
 			default:
 				// Default for missing or misset notification level is fail.
-				return $result_set->getFailCount();
+				return (bool) $result_set->getFailCount();
 		}
 	}
 
@@ -151,18 +151,7 @@ class Reporter
 		$namespace_prefix = "\Reporter\Content\\";
 		$class = $namespace_prefix . ucfirst($content);
 
-		switch ($operator) {
-			case '=': $method = 'equal'; break;
-			case '!=': $method = 'notEqual'; break;
-			case '<': $method = 'lessThan'; break;
-			case '<=': $method = 'lessThanEqual'; break;
-			case '>': $method = 'greaterThan'; break;
-			case '>=': $method = 'greaterThanEqual'; break;
-			case 'contains': $method = 'contains'; break;
-			case '!contain': 
-			case '!contains': $method = 'doesntContain'; break;
-			default: $method = $operator; break;
-		}
+		$method = self::convertOperatorToMethod($operator);
 
 		if (class_exists($class) && method_exists($class, $method)) {
 
@@ -214,6 +203,23 @@ class Reporter
 
 		$this->remote_content[$uri] = $contents;
 		return $contents;
+	}
+
+	protected static function convertOperatorToMethod($operator)
+	{
+		switch ($operator) {
+			case '=': $method = 'equal'; break;
+			case '!=': $method = 'notEqual'; break;
+			case '<': $method = 'lessThan'; break;
+			case '<=': $method = 'lessThanEqual'; break;
+			case '>': $method = 'greaterThan'; break;
+			case '>=': $method = 'greaterThanEqual'; break;
+			case 'contains': $method = 'contains'; break;
+			case '!contain': 
+			case '!contains': $method = 'doesntContain'; break;
+			default: $method = $operator; break;
+		}
+		return $method;
 	}
 
 	protected static function retrieveURI($uri) 
