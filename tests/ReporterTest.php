@@ -124,8 +124,26 @@ class ReporterTest extends \PHPUnit_Framework_TestCase
 		$method->setAccessible(true);
 
 		$expected_value = array($config['include_base'] . $config['test_folder'] . '/' . $config['test_file']);
-		$return_val = $method->invokeArgs($reporter, array($config));
-		$this->assertTrue($return_val == $expected_value);
+		$test_files = $method->invokeArgs($reporter, array($config));
+		$this->assertTrue($test_files == $expected_value);
+	}
+
+	/**
+	 * @depends testInstantiation
+	 */
+	public function testGetTestFilesAllFiles($reporter) {
+
+		$class = new \ReflectionClass('Reporter\Reporter');
+		$method = $class->getMethod('getTestFiles');
+		$method->setAccessible(true);
+
+		$config = $this->getConfig();
+		$known_test_file = 'github.json';
+
+		$expected_value = $config['include_base'] . $config['test_folder'] . '/' . $known_test_file;
+		$test_files = $method->invokeArgs($reporter, array($config));
+		
+		$this->assertTrue(in_array($expected_value, $test_files));
 	}
 
 	/**
@@ -195,22 +213,123 @@ class ReporterTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($method->invokeArgs($reporter, array('contains')), 'contains');
 		$this->assertEquals($method->invokeArgs($reporter, array('!contain')), 'doesntContain');
 		$this->assertEquals($method->invokeArgs($reporter, array('!contains')), 'doesntContain');
+		$this->assertEquals($method->invokeArgs($reporter, array('foobar')), 'foobar');
 	}
 
 	/**
 	 * @depends testInstantiation
 	 */
-	/*
-	Note: This shouldn't run everything - refactor based on this
-	public function testProcessTestFile($config) {
+	public function testProcessTestFile($reporter) {
 		$class = new \ReflectionClass('Reporter\Reporter');
 		$method = $class->getMethod('processTestFile');
 		$method->setAccessible(true);
 
-		$reporter = new Reporter\Reporter($config);
-		$method->invokeArgs($reporter, array('tests/github.json'));
-		
-	}*/
+		$individual_test_config = $method->invokeArgs($reporter, array('report_config/github.json'));
+
+		$this->assertTrue(is_object($individual_test_config));
+		$this->assertTrue(property_exists($individual_test_config, 'tests'));		
+	}
+
+	/**
+	 * @depends testInstantiation
+	 * @expectedException PHPUnit_Framework_Error
+	 */
+	public function testProcessTestFileBadFile($reporter) {
+		$class = new \ReflectionClass('Reporter\Reporter');
+		$method = $class->getMethod('processTestFile');
+		$method->setAccessible(true);
+
+		$individual_test_config = $method->invokeArgs($reporter, array('report_config/doesntexist.json'));	
+	}
+
+	/**
+	 * @depends testInstantiation
+	 * @expectedException PHPUnit_Framework_Error
+	 */
+	public function testProcessTestFileBadJson($reporter) {
+		$class = new \ReflectionClass('Reporter\Reporter');
+		$method = $class->getMethod('processTestFile');
+		$method->setAccessible(true);
+
+		$individual_test_config = $method->invokeArgs($reporter, array('tests/fixtures/resp1.txt'));	
+	}
+
+	/**
+	 * @depends testInstantiation
+	 */
+	public function testWriteToFile($reporter) {
+		$class = new \ReflectionClass('Reporter\Reporter');
+		$method = $class->getMethod('writeToFile');
+		$method->setAccessible(true);
+
+		$writable_file = 'tests/fixtures/writable_file.txt';
+		$contents = 'hello_world';
+
+		self::truncateFile($writable_file);
+
+		$this->assertTrue($method->invokeArgs($reporter, array($writable_file, $contents)));
+		$this->assertStringMatchesFormatFile($writable_file, $contents . "\n");
+
+		$unwritable_file = 'tests/fixtures/unwritable_file.txt';
+		$this->assertFalse($method->invokeArgs($reporter, array($unwritable_file, $contents)));
+	}
+
+	/**
+	 * @depends testInstantiation
+	 * @depends testParseTestFileContents
+	 */
+	public function testRunTestFile($reporter, $test_config) {
+		$class = new \ReflectionClass('Reporter\Reporter');
+		$method = $class->getMethod('runTestFile');
+		$method->setAccessible(true);
+
+		$result_set = new ResultSet();
+
+		$this->expectOutputRegex('/Test complete/s');
+
+		$method->invokeArgs($reporter, array($test_config, &$result_set));
+	}
+
+	/**
+	 * @depends testInstantiation
+	 */
+	public function testWriteToFileFail($reporter) {
+		/*$class = new \ReflectionClass('Reporter\Reporter');
+		$method = $class->getMethod('writeToFile');
+		$method->setAccessible(true);
+
+		$writable_file = 'tests/fixtures/unwritable_file.txt';
+		$contents = 'hello_world';
+
+		self::truncateFile($writable_file);
+
+		$this->assertFalse($method->invokeArgs($reporter, array($writable_file, $contents)));
+	*/}
+
+	/**
+	 * @depends testInstantiation
+	 */
+	public function testOutputHeader($reporter) {
+		$class = new \ReflectionClass('Reporter\Reporter');
+		$method = $class->getMethod('outputHeader');
+		$method->setAccessible(true);
+
+		$message = 'php reporter';
+		$header = $method->invokeArgs($reporter, array($message));
+
+		$this->assertInternalType('string', $header);
+		$this->assertContains($message, $header);
+	}
+
+	protected static function truncateFile($file) {
+		$f = fopen($file, "r+");
+		if ($f !== false) {
+			ftruncate($f, 0);
+			fclose($f);
+			return true;
+		}
+		return false;
+	}
 
 	protected static function getMethod($name) {
 		$class = new \ReflectionClass('Reporter\Reporter');
