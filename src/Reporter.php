@@ -23,8 +23,20 @@ class Reporter
 		}
 
 		$test_files = $this->getTestFiles($config);
-		foreach ($test_files as $test_file) { 
-			$this->processTestFile($test_file, $config);
+
+		foreach ($test_files as $test_file) {
+			if ($individual_test_config = $this->processTestFile($test_file)) {
+
+				$result_set = new \Reporter\ResultSet();
+				$this->runTestFile($individual_test_config, $result_set);
+
+				$notification_expected = self::testNotificationLevelMet($test_config, $result_set) && 
+					$this->notifier;
+
+				if ($notification_expected && $this->notifier->sendResults($result_set, $test_config)) {
+					echo $this->formatOutput('Results Emailed.');
+				}
+			}
 		}
 	}
 
@@ -72,21 +84,15 @@ class Reporter
 		return !(bool) error_get_last();
 	}
 
-	protected function processTestFile($filepath, $config)
+	protected function processTestFile($filepath)
 	{
 		if ($contents = self::retrieveTestFileContents($filepath)) {
 			if (($test_config = self::parseTestFileContents($contents)) !== false) {
-				$result_set = new \Reporter\ResultSet();
-				$this->runTestFile($test_config, $result_set);
-				if (self::testNotificationLevelMet($test_config, $result_set) && $this->notifier && $this->notifier->sendResults($result_set, $test_config)) {
-					echo $this->formatOutput('Results Emailed.');
-				}
-			} else {
-				trigger_error('Test file ' .  escapeshellcmd($filepath) . ' is not a valid json file and could not be parsed.', E_USER_ERROR);
+				return $test_config;
 			}
-		} else {
-			trigger_error('Cound not retrieve contents of ' . escapeshellcmd($filepath), E_USER_ERROR);
+			trigger_error('Test file ' .  escapeshellcmd($filepath) . ' is not a valid json file and could not be parsed.', E_USER_ERROR);
 		}
+		trigger_error('Cound not retrieve contents of ' . escapeshellcmd($filepath), E_USER_ERROR);
 	}
 
 	protected function validateTestFilename($filepath, $config)
