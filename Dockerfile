@@ -2,6 +2,8 @@ FROM php:5.6
 
 RUN apt-get update && apt-get -y upgrade && DEBIAN_FRONTEND=noninteractive apt-get -y install php5-curl curl lynx-cur vim htop zip
 
+RUN apt-get update && pecl install xdebug && docker-php-ext-enable xdebug
+
 EXPOSE 80
 
 ADD / /var/www/html/reporter
