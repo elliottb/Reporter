@@ -42,7 +42,7 @@ class Reporter
 
 	protected function getTestFiles($config) {
 		$test_files = array();
-		if ($config['test_file']) {
+		if (isset($config['test_file'])) {
 			if (!$this->validateTestFilename($config['test_file'], $config)) {
 				trigger_error('Filename ' . escapeshellcmd($config['test_file']) . ' did not validate', E_USER_ERROR);
 			}
